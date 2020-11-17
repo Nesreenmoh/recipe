@@ -1,6 +1,7 @@
 package com.yummy.recipe.controllers;
 
 import com.yummy.recipe.models.Recipe;
+import com.yummy.recipe.services.ImageService;
 import com.yummy.recipe.services.RecipeService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,6 +23,9 @@ class RecipeControllerTest {
 
     @Mock
     RecipeService recipeService;
+
+    @Mock
+    ImageService imageService;
 
     @Mock
     Model model;
@@ -86,6 +90,5 @@ class RecipeControllerTest {
                 .andExpect(model().attributeExists("recipe"));
 
     }
-
 
 }

@@ -2,7 +2,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
   <head>
     <meta charset="UTF-8" />
-    <title th:text="${title}">Pet Clinic Index</title>
+    <title th:text="${title}">Show Recipe Details</title>
     <!-- Latest compiled and minified CSS -->
     <link
       rel="stylesheet"
@@ -57,7 +57,7 @@
                   <div class="col-md-6">
                     <img
                       src="../../static/images/guacamole.jpg"
-                      th:src="@{'/images/guacamole.jpg'}"
+                      th:src="@{'/recipe/' + ${recipe.id} + '/recipeimage'}"
                       width="200"
                       height="200"
                     />
