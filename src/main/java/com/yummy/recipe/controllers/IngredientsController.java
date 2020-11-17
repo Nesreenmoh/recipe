@@ -1,6 +1,8 @@
 package com.yummy.recipe.controllers;
 
 import com.yummy.recipe.models.Ingredient;
+import com.yummy.recipe.models.Recipe;
+import com.yummy.recipe.models.UnitOfMeasure;
 import com.yummy.recipe.services.IngredientService;
 import com.yummy.recipe.services.RecipeService;
 import com.yummy.recipe.services.UnitOfMeasureService;
@@ -45,6 +47,27 @@ public class IngredientsController {
         return "recipe/ingredient/show";
     }
 
+    // add new ingredient
+
+    @GetMapping
+    @RequestMapping("/recipe/{recipeId}/ingredient/new")
+    public String newRecipeIngredient(@PathVariable("recipeId") Long recipeId, Model model){
+        // search for a recipe
+        Recipe recipe = recipeService.getRecipeById(recipeId);
+        // create a new ingredient
+        Ingredient ingredient= new Ingredient();
+        // add the recipe to the ingredient
+
+        ingredient.setRecipe(recipe);
+        ingredient.setUnitOfMeasure(new UnitOfMeasure());
+
+        model.addAttribute("ingredient", ingredient);
+        model.addAttribute("uomList",unitOfMeasureService.ListAllUnitOfMeasures());
+        return "recipe/ingredient/ingredientform";
+    }
+
+
+    // update ingredient
     @GetMapping
     @RequestMapping("/recipe/{recipeId}/ingredient/{ingredientId}/update")
     public String updateRecipeIngredient(@PathVariable("recipeId") Long recipeId, @PathVariable("ingredientId") Long ingredientId, Model model){
@@ -52,6 +75,7 @@ public class IngredientsController {
         model.addAttribute("uomList",unitOfMeasureService.ListAllUnitOfMeasures());
         return "recipe/ingredient/ingredientform";
     }
+
 
     @PostMapping
     @RequestMapping("/recipe/{recipeId}/ingredient")

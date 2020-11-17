@@ -9,6 +9,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Slf4j
 @Service
 public class IngredientService {
@@ -37,26 +39,32 @@ public class IngredientService {
         }
 
         // retrieve the ingredient by id
-        Ingredient ingredient1 = recipe.getIngredients()
+        Optional<Ingredient> ingredientOptional = recipe.getIngredients()
                 .stream()
                 .filter(ingredient2 -> ingredient2.getId()==ingredient.getId())
-                .findFirst()
-                .get();
-        if(ingredient1!=null){
-            ingredient1.setAmount(ingredient.getAmount());
-            ingredient1.setDescription(ingredient.getDescription());
-            ingredient1.setUnitOfMeasure( unitOfMeasureRepository.findById
+                .findFirst();
+
+        if(ingredientOptional.isPresent()){
+            Ingredient newIngredient = ingredientOptional.get();
+            newIngredient.setAmount(ingredient.getAmount());
+            newIngredient.setDescription(ingredient.getDescription());
+            newIngredient.setUnitOfMeasure( unitOfMeasureRepository.findById
                     (ingredient.getUnitOfMeasure().getId())
                     .orElseThrow(()-> new RuntimeException("Unit of Measure is not found")));
+            return  newIngredient;
         }
         else{
             // add a new ingredient
-            ingredient1.setRecipe(recipe);
-            recipe.addIngredient(ingredient1);
+            Ingredient newIngredient = new Ingredient();
+            newIngredient.setDescription(ingredient.getDescription());
+            newIngredient.setAmount(ingredient.getAmount());
+            newIngredient.setUnitOfMeasure(ingredient.getUnitOfMeasure());
+            newIngredient.setRecipe(recipe);
+            recipe.addIngredient(newIngredient);
+            ingredientRepository.save(newIngredient);
+            recipeRepository.save(recipe);
+            return  newIngredient;
         }
-        ingredientRepository.save(ingredient1);
-        recipeRepository.save(recipe);
-        return ingredient1;
     }
 
     // get one an ingredient details
