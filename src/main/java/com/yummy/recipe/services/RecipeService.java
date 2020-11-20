@@ -1,5 +1,6 @@
 package com.yummy.recipe.services;
 
+import com.yummy.recipe.exceptions.NotFoundException;
 import com.yummy.recipe.models.Ingredient;
 import com.yummy.recipe.models.Recipe;
 import com.yummy.recipe.repositories.RecipeRepository;
@@ -32,7 +33,7 @@ public class RecipeService {
     public Recipe getRecipeById(Long id) {
         Optional<Recipe> recipe = recipeRepository.findById(id);
         if (!recipe.isPresent()) {
-            throw new RuntimeException("Invalid Id");
+            throw new NotFoundException("Recipe is not found");
         }
         return recipe.get();
     }

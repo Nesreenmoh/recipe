@@ -1,5 +1,6 @@
 package com.yummy.recipe.controllers;
 
+import com.yummy.recipe.exceptions.NotFoundException;
 import com.yummy.recipe.models.Recipe;
 import com.yummy.recipe.services.ImageService;
 import com.yummy.recipe.services.RecipeService;
@@ -32,19 +33,21 @@ class RecipeControllerTest {
 
     Recipe recipe;
 
+    MockMvc mockMvc;
 
     @BeforeEach
     void setUp() {
 
         MockitoAnnotations.initMocks(this);
         recipeController = new RecipeController(recipeService);
+        mockMvc = MockMvcBuilders.standaloneSetup(recipeController).build();
     }
 
     @Test
     void showByIdTest() throws Exception {
         Recipe recipe = new Recipe();
         recipe.setId(3L);
-        MockMvc mockMvc = mockMvc = MockMvcBuilders.standaloneSetup(recipeController).build();
+
 
         when(recipeService.getRecipeById(anyLong())).thenReturn(recipe);
         mockMvc.perform(get("/recipe/" + 3L + "/show"))
@@ -56,7 +59,6 @@ class RecipeControllerTest {
     @Test
     void deleteRecipeById() throws Exception {
         //given
-        MockMvc mockMvc = MockMvcBuilders.standaloneSetup(recipeController).build();
         Recipe recipe = new Recipe();
         recipe.setId(3L);
 
@@ -77,7 +79,6 @@ class RecipeControllerTest {
 
         when(recipeService.getRecipeById(anyLong())).thenReturn(recipe1);
 
-        MockMvc mockMvc = MockMvcBuilders.standaloneSetup(recipeController).build();
         mockMvc.perform(get("/recipe/new"))
                 .andExpect(status().isOk())
                 .andExpect(model().attributeExists("recipe"))
@@ -88,6 +89,16 @@ class RecipeControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(view().name("/recipe/recipeForm"))
                 .andExpect(model().attributeExists("recipe"));
+
+    }
+
+    @Test
+    void getRecipeByIdTestResponseStatusNotFound() throws Exception {
+
+        when(recipeService.getRecipeById(anyLong())).thenThrow(NotFoundException.class);
+
+        mockMvc.perform(get("/recipe/1/show"))
+                .andExpect(status().isNotFound());
 
     }
 

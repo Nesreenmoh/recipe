@@ -1,9 +1,12 @@
 package com.yummy.recipe.services;
 
+import com.yummy.recipe.exceptions.NotFoundException;
 import com.yummy.recipe.models.Recipe;
 import com.yummy.recipe.repositories.RecipeRepository;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -61,6 +64,19 @@ class RecipeServiceTest {
         assertEquals(recipe,returnedRecipe);
         verify(recipeRepository, times(1)).findById(anyLong());
         verify(recipeRepository, never()).findAll();
+    }
+
+    @Test
+    void getRecipeByIdTestNotFound() {
+
+        // when
+        when(recipeRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        // assert that NotFound exception will be raised
+        Assertions.assertThrows(NotFoundException.class, () ->{
+            Recipe returnedRecipe = recipeService.getRecipeById(3L);
+        });
+
     }
 
     @Test

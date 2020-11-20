@@ -1,6 +1,7 @@
 package com.yummy.recipe.controllers;
 
 
+import com.yummy.recipe.exceptions.NotFoundException;
 import com.yummy.recipe.models.Recipe;
 import com.yummy.recipe.services.ImageService;
 import com.yummy.recipe.services.RecipeService;
@@ -27,11 +28,15 @@ public class RecipeController {
         this.recipeService = recipeService;
     }
 
-    @GetMapping("/recipe/{id}/show")
-    public String showById(@PathVariable("id") Long id, Model model) {
+    @GetMapping("/recipe/{recipeId}/show")
+    public String showById(@PathVariable("recipeId") Long recipeId, Model model) {
+        Recipe returnedRecipe = recipeService.getRecipeById(recipeId);
+         if(returnedRecipe==null){
+             throw new NotFoundException("Recipe is not found");
+         }
         log.debug("Getting a recipe details Page");
         model.addAttribute("title", "Recipe Details");
-        model.addAttribute("recipe", recipeService.getRecipeById(id));
+        model.addAttribute("recipe", returnedRecipe);
         return "recipe/show";
     }
 
