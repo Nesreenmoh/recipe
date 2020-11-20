@@ -1,2 +1,2 @@
-# recipe
-Application with java, springboot and thymeleaf.
+# Recipe Application
+A java application with springboot and thymeleaf.
