@@ -27,17 +27,21 @@ class ImageControllerTest {
     @Mock
     ImageService imageService;
 
+    MockMvc mockMvc;
+
     @BeforeEach
     void setUp() {
 
         MockitoAnnotations.initMocks(this);
         imageController = new ImageController(imageService,recipeService);
+        mockMvc= MockMvcBuilders.standaloneSetup(imageController).setControllerAdvice(new ExceptionHandlerController())
+                .build();
     }
 
     @Test
     void getImageForm() throws Exception {
         //given
-        MockMvc mockMvc = MockMvcBuilders.standaloneSetup(imageController).build();
+
 
         //when
         mockMvc.perform(get("/recipe/2/image"))
@@ -66,7 +70,6 @@ class ImageControllerTest {
         recipe.setImage(byteBoxing);
 
         //when
-        MockMvc mockMvc = MockMvcBuilders.standaloneSetup(imageController).build();
 
         when(recipeService.getRecipeById(anyLong())).thenReturn(recipe);
 
