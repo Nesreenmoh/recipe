@@ -33,7 +33,7 @@ public class RecipeService {
     public Recipe getRecipeById(Long id) {
         Optional<Recipe> recipe = recipeRepository.findById(id);
         if (!recipe.isPresent()) {
-            throw new NotFoundException("Recipe is not found");
+            throw new NotFoundException("Recipe is not found for id value = "+ id.toString());
         }
         return recipe.get();
     }
