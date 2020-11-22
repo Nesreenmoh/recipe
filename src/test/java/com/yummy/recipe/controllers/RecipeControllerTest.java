@@ -8,6 +8,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.ui.Model;
@@ -32,7 +33,7 @@ class RecipeControllerTest {
     @Mock
     Model model;
 
-    Recipe recipe;
+    Recipe recipe1;
 
     MockMvc mockMvc;
 
@@ -44,6 +45,8 @@ class RecipeControllerTest {
         mockMvc = MockMvcBuilders.standaloneSetup(recipeController)
                 .setControllerAdvice(new ExceptionHandlerController())
                 .build();
+        Recipe recipe1 = new Recipe();
+        recipe1.setId(4L);
     }
 
     @Test
@@ -91,7 +94,7 @@ class RecipeControllerTest {
         mockMvc.perform(get("/recipe/" + 4L + "/update"))
                 .andExpect(model().attributeExists("title"))
                 .andExpect(status().isOk())
-                .andExpect(view().name("/recipe/recipeForm"))
+                .andExpect(view().name("recipe/recipeform"))
                 .andExpect(model().attributeExists("recipe"));
 
     }
@@ -123,5 +126,29 @@ class RecipeControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(model().attributeExists("exception"))
                 .andExpect(view().name("400error"));
+    }
+
+    @Test
+    void newRecipe() throws Exception {
+        when(recipeService.saveOrUpdate(any())).thenReturn(recipe1);
+
+        mockMvc.perform(get("/recipe/new"))
+                .andExpect(status().isOk())
+                .andExpect(model().attributeExists("recipe"))
+                .andExpect(view().name("recipe/recipeform"));
+    }
+
+    @Test
+    void saveOrUpdate() throws Exception {
+        when(recipeService.saveOrUpdate(any())).thenReturn(recipe1);
+
+        mockMvc.perform(post("/recipe/new")
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .param("id","4")
+                .param("description","some string")
+                .param("direction", "some String")
+        )
+                .andExpect(status().isOk())
+                .andExpect(view().name("recipe/recipeform"));
     }
 }
