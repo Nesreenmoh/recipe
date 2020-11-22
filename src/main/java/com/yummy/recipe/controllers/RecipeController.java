@@ -10,10 +10,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
+
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 
 @Slf4j
 @Controller
@@ -48,11 +51,19 @@ public class RecipeController {
     public String newRecipe(@PathVariable("id") Long id, Model model) {
         model.addAttribute("title", "Update Recipe");
         model.addAttribute("recipe", recipeService.getRecipeById(id));
-        return "/recipe/recipeForm";
+        return "recipe/recipeform";
     }
 
-    @PostMapping("recipe")
-    public String saveOrUpdate(@ModelAttribute Recipe recipe, Model model, Errors errors) {
+    /*
+    Errors should be placed after you define the @Valid @ModelAttribute("recipe") Recipe recipe
+    so Spring will handle any errors from the template
+     */
+
+    @PostMapping("/recipe/new")
+    public String saveOrUpdate(@Valid @ModelAttribute("recipe") Recipe recipe, Errors errors,Model model ) {
+        if(errors.hasErrors()){
+            return "recipe/recipeform";
+        }
         recipeService.saveOrUpdate(recipe);
         return "redirect:/recipe/" + recipe.getId() + "/show";
 
